@@ -77,6 +77,22 @@
       .navlinks{display:none}.features,.pricing{grid-template-columns:1fr}
       h1{letter-spacing:-2.5px}.hero{min-height:580px}
     }
+  
+    .pricing-focus .price-card{
+      animation: pricingCardFocus 900ms ease both;
+    }
+    .pricing-focus .price-card:nth-child(2){
+      animation-delay: 90ms;
+    }
+    @keyframes pricingCardFocus{
+      0%{transform:translateY(18px);opacity:.55}
+      55%{transform:translateY(-3px);opacity:1}
+      100%{transform:translateY(0);opacity:1}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .pricing-focus .price-card{animation:none}
+    }
+
   </style>
 </head>
 <body>
@@ -100,7 +116,7 @@
           <h1>Precision.<br><span class="blue">Performance.</span><br>Control.</h1>
           <p>Built for users who want a focused, responsive macro experience with a clean interface and powerful control.</p>
           <div class="actions">
-            <a class="primary" href="#pricing">View Pricing</a>
+            <a class="primary" href="#pricing" id="view-pricing">View Pricing</a>
             <a class="secondary" href="https://discord.gg/coremotion" target="_blank" rel="noopener">Join Discord</a>
           </div>
         </div>
@@ -154,5 +170,46 @@
 
     <footer>© 2026 Core Motion. All rights reserved.</footer>
   </div>
+
+<script>
+  const pricingButton = document.getElementById("view-pricing");
+  const pricingSection = document.getElementById("pricing");
+
+  if (pricingButton && pricingSection) {
+    pricingButton.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reduceMotion) {
+        pricingSection.scrollIntoView({ behavior: "auto", block: "start" });
+      } else {
+        const start = window.scrollY;
+        const target = pricingSection.getBoundingClientRect().top + window.scrollY - 28;
+        const distance = target - start;
+        const duration = 900;
+        const startTime = performance.now();
+
+        const easeInOutCubic = (t) =>
+          t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+        const animate = (now) => {
+          const progress = Math.min((now - startTime) / duration, 1);
+          window.scrollTo(0, start + distance * easeInOutCubic(progress));
+
+          if (progress < 1) requestAnimationFrame(animate);
+        };
+
+        requestAnimationFrame(animate);
+      }
+
+      pricingSection.classList.remove("pricing-focus");
+      void pricingSection.offsetWidth;
+      pricingSection.classList.add("pricing-focus");
+      setTimeout(() => pricingSection.classList.remove("pricing-focus"), 1100);
+    });
+  }
+</script>
+
 </body>
 </html>
