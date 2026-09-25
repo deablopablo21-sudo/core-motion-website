@@ -210,6 +210,17 @@
     });
   }
 </script>
+<script>
+document.getElementById("view-pricing").addEventListener("click", function (e) {
+    e.preventDefault();
 
+    const target = document.getElementById("pricing");
+
+    window.scrollTo({
+        top: target.offsetTop - 20,
+        behavior: "smooth"
+    });
+});
+</script>
 </body>
 </html>
